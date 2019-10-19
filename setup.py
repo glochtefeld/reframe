@@ -26,4 +26,5 @@ setup(
                    'Programming Language :: Python :: 3.4',
                    'Topic :: Education'),
     long_description=open('README.rst').read(),
+    packages=find_packages()
 )

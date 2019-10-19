@@ -29,7 +29,7 @@ class Relation(pd.DataFrame):
             super().__init__(filepath)
         else:
             print('help')
-            
+
     def project(self, cols):
         """returns a new Relation with only the specified columns
 
@@ -62,7 +62,7 @@ class Relation(pd.DataFrame):
             if name not in self.columns:
                 raise ValueError("'{}' is not a valid attribute name in relation".format(name))
         return Relation(self[cols].drop_duplicates())
-    
+
     def query(self, q):
         """return a new relation with tuples matching the query condition
 
@@ -189,6 +189,67 @@ class Relation(pd.DataFrame):
             raise ValueError("The two relations must have some columns in common")
         return Relation(pd.merge(self,other,how='inner',on=list(col_list)))
 
+    def antijoin(self,other):
+        """ Return a relation that contains unique records of the first relation
+
+        In order to compute the antijoin of two Relations, they must
+        be union compatible, with the same column names. 
+
+        :param other:
+        :return:
+
+        :Example:
+
+        >>> from reframe import Relation
+        >>> country = Relation('country.csv')
+        >>> country.query('continent == "Africa"').antijoin(country.query('region == "Western Africa"')).project(['name','region'])
+                                              name           region continent
+        4                                  Algeria  Northern Africa    Africa
+        7                                   Angola   Central Africa    Africa
+        27                                Botswana  Southern Africa    Africa
+        34                                 Burundi   Eastern Africa    Africa
+        39                                Djibouti   Eastern Africa    Africa
+        43                                   Egypt  Northern Africa    Africa
+        45                                 Eritrea   Eastern Africa    Africa
+        47                            South Africa  Southern Africa    Africa
+        48                                Ethiopia   Eastern Africa    Africa
+        53                                   Gabon   Central Africa    Africa
+        87                                Cameroon   Central Africa    Africa
+        91                                   Kenya   Eastern Africa    Africa
+        92                Central African Republic   Central Africa    Africa
+        97                                 Comoros   Eastern Africa    Africa
+        98                                   Congo   Central Africa    Africa
+        99   Congo, The Democratic Republic of the   Central Africa    Africa
+        110                                Lesotho  Southern Africa    Africa
+        112                                Liberia   Western Africa    Africa
+        113                 Libyan Arab Jamahiriya  Northern Africa    Africa
+        117                         Western Sahara  Northern Africa    Africa
+        119                             Madagascar   Eastern Africa    Africa
+        121                                 Malawi   Eastern Africa    Africa
+        126                                Morocco  Northern Africa    Africa
+        130                              Mauritius   Eastern Africa    Africa
+        131                                Mayotte   Eastern Africa    Africa
+        138                             Mozambique   Eastern Africa    Africa
+        140                                Namibia  Southern Africa    Africa
+        162                      Equatorial Guinea   Central Africa    Africa
+        167                                Réunion   Eastern Africa    Africa
+        169                                 Rwanda   Eastern Africa    Africa
+        171                           Saint Helena   Western Africa    Africa
+        178                                 Zambia   Eastern Africa    Africa
+        181                  Sao Tome and Principe   Central Africa    Africa
+        184                             Seychelles   Eastern Africa    Africa
+        189                                Somalia   Eastern Africa    Africa
+        191                                  Sudan  Northern Africa    Africa
+        194                              Swaziland  Southern Africa    Africa
+        199                               Tanzania   Eastern Africa    Africa
+        206                                   Chad   Central Africa    Africa
+        208                                Tunisia  Northern Africa    Africa
+        213                                 Uganda   Eastern Africa    Africa
+        230                               Zimbabwe   Eastern Africa    Africa
+        234         British Indian Ocean Territory   Eastern Africa    Africa
+        """
+        new_table = self.minus(other)
+        return new_table
 
 
     def union(self,other):
